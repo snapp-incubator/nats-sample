@@ -1,15 +1,15 @@
 ---
 service:
   loadBalancer:
-    enabled: true
+    enabled: true  # Expose the NATS service using a LoadBalancer
 
 nats:
   global:
     labels:
-      app: mynats
+      app: mynats  # Global label for all NATS components
 
   natsBox:
-    enabled: false
+    enabled: false  # natsBox for debugging is disabled
 
   podTemplate:
     patch:
@@ -18,60 +18,57 @@ nats:
         value:
           sysctls:
             - name: net.core.somaxconn
-              value: "16384"
+              value: "16384"  # Optimize OS-level connection backlog queue size
 
   config:
     cluster:
-      noAdvertise: true
-      enabled: true
-      replicas: 3
+      noAdvertise: true  # Prevents publishing of cluster routes to clients
+      enabled: true  # NATS clustering is enabled
+      replicas: 3  # Number of NATS nodes in the cluster
       merge:
-        pool_size: 1024
+        pool_size: 1024  # Custom NATS server pool size configuration
 
     gateway:
-      enabled: false
+      enabled: false  # NATS Gateway feature is disabled
 
     jetstream:
-      enabled: true
+      enabled: true  # Enable Jetstream for persistent message storage
       memoryStore:
-        enabled: true
-        maxSize: 2Gi
+        enabled: true  # Enable memory storage with a max size
+        maxSize: 2Gi  # Max size for the in-memory storage
       fileStore:
-        enabled: true
-        storageDirectory: /data
+        enabled: true  # Enable file storage
+        storageDirectory: /data  # Directory for storing the data
         pvc:
-          enabled: true
-          size: 2Gi
-          storageClassName: block-storage-high-speed
+          enabled: true  # Enable a PersistentVolumeClaim
+          size: 2Gi  # Size of the PVC
+          storageClassName: block-storage-high-speed  # Define the storage class for high I/O performance
 
   container:
     merge:
       resources:
-        requests:
+        requests:  # Minimum resources for the NATS container
           cpu: 1
           memory: 1Gi
           ephemeral-storage: 1Gi
-        limits:
+        limits:  # Maximum resources for the NATS container
           cpu: 3
           memory: 3Gi
           ephemeral-storage: 1Gi
 
   promExporter:
-    enabled: true
+    enabled: true  # Enable Prometheus exporter for monitoring
     podMonitor:
-      enabled: true
+      enabled: true  # Enable PodMonitor for Prometheus integration
     merge:
       resources:
-        requests:
+        requests:  # Minimum resources for the Prometheus exporter
           cpu: 1
           memory: 500Mi
-        limits:
+        limits:  # Maximum resources for the Prometheus exporter
           cpu: 1
           memory: 500Mi
 
-  # Define a Pod Disruption Budget for the stateful set
-  # ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
   podDisruptionBudget:
-    enabled: false
-    maxUnavailable: 1
-    # minAvailable: 1
+    enabled: false  # Pod disruption budget is not enabled
+    maxUnavailable: 1  # Maximum number of unavailable pods during disruption
