@@ -1,0 +1,30 @@
+{{- if .Values.service.loadBalancer.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    metallb.universe.tf/address-pool: vpn-access
+  labels:
+    app: {{ .Values.nats.global.labels.app }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  name: {{ .Release.Name }}-lb
+spec:
+  ports:
+    - name: nats
+      port: 4222
+      protocol: TCP
+      targetPort: 4222
+    - name: gateway
+      port: 7522
+      protocol: TCP
+      targetPort: 7522
+    - name: monitoring
+      port: 8222
+      protocol: TCP
+      targetPort: 8222
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app: {{ .Values.nats.global.labels.app }}
+  type: LoadBalancer
+{{- end }}

@@ -1,0 +1,10 @@
+---
+apiVersion: v2
+name: nats-sample
+description: nats chart sample
+type: application
+version: 0.1.0
+dependencies:
+  - name: nats
+    version: 1.1.6
+    repository: https://nats-io.github.io/k8s/helm/charts

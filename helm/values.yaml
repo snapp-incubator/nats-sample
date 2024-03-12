@@ -1,0 +1,77 @@
+---
+service:
+  loadBalancer:
+    enabled: true
+
+nats:
+  global:
+    labels:
+      app: mynats
+
+  natsBox:
+    enabled: false
+
+  podTemplate:
+    patch:
+      - op: add
+        path: /spec/securityContext
+        value:
+          sysctls:
+            - name: net.core.somaxconn
+              value: "16384"
+
+  config:
+    cluster:
+      noAdvertise: true
+      enabled: true
+      replicas: 3
+      merge:
+        pool_size: 1024
+
+    gateway:
+      enabled: false
+
+    jetstream:
+      enabled: true
+      memoryStore:
+        enabled: true
+        maxSize: 2Gi
+      fileStore:
+        enabled: true
+        storageDirectory: /data
+        pvc:
+          enabled: true
+          size: 2Gi
+          storageClassName: block-storage-high-speed
+
+  container:
+    merge:
+      resources:
+        requests:
+          cpu: 1
+          memory: 1Gi
+          ephemeral-storage: 1Gi
+        limits:
+          cpu: 3
+          memory: 3Gi
+          ephemeral-storage: 1Gi
+
+  promExporter:
+    enabled: true
+    podMonitor:
+      enabled: true
+    merge:
+      resources:
+        requests:
+          cpu: 1
+          memory: 500Mi
+        limits:
+          cpu: 1
+          memory: 500Mi
+
+  # Define a Pod Disruption Budget for the stateful set
+  # ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+  podDisruptionBudget:
+    enabled: false
+    maxUnavailable: 1
+    # minAvailable: 1
