@@ -2,6 +2,12 @@
 
 This Helm chart is designed for efficient and manageable deployments of a NATS cluster within Kubernetes. It includes configurations for high availability, performance tuning, and observability with Prometheus integration. Users should adapt the default values according to their cluster workload requirements and resource availability.
 
+## Installation
+
+```sh
+helm upgrade --install myrelease helm
+```
+
 ## Configuration
 
 You can customize your NATS cluster via the `values.yaml` file. The following table describes the configurable parameters in the `values.yaml` file of the NATS Helm chart and their default values.
@@ -34,8 +40,12 @@ You can customize your NATS cluster via the `values.yaml` file. The following ta
 | `podDisruptionBudget.enabled`          | Enables Pod Disruption Budget to maintain high availability     | `false`                               |
 | `podDisruptionBudget.maxUnavailable`   | Maximum number or percentage of unavailable pods during disruption | `1`                                 |
 
-## Installation
+## Monitoring
 
-```sh
-helm upgrade --install myrelease helm
-```
+### Grafana Dashboard
+
+You can find a rich sample of the Grafana dashboard example useful for visualizing NATS metrics in the [monitoring](./monitoring/grafana-dashboard.json) folder. You should customize it according to your requirements.
+
+### Alerting
+
+You can find useful alerts to set on the NATS cluster in the [monitoring](./monitoring/prometheus-rule.yaml) folder. You should customize it according to your requirements.
